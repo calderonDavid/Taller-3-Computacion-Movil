@@ -7,6 +7,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.taller3.screens.login
 import com.example.taller3.screens.register
+import com.example.taller3.screens.home
+
 
 enum class AppScreens{
     authentication,
@@ -26,7 +28,7 @@ fun Navigation(){
             register(navController)
         }
         composable(route = AppScreens.home.name){
-            //AppScreens.home()
+            home(navController)
         }
     }
 }

@@ -3,7 +3,6 @@ package com.example.taller3
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.room.util.copy
 import com.example.taller3.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
