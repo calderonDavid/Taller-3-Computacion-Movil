@@ -82,6 +82,9 @@ fun login(controller : NavController, model : AuthViewModel = viewModel() ){
                 }
             }
         }
+        ButtonShared("Register") {
+            controller.navigate(AppScreens.register.name)
+        }
 
     }
 }

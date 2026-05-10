@@ -48,6 +48,7 @@ fun register(controller: NavController, viewModel: AuthViewModel = viewModel()) 
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                Text(text = "Profile Picture", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Column(
                     modifier = Modifier
                         .fillMaxWidth(),
