@@ -2,7 +2,6 @@ package com.example.taller3
 
 import androidx.lifecycle.ViewModel
 import androidx.room.util.copy
-import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.auth.AuthState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
