@@ -27,7 +27,7 @@ data class AuthState(
 
 class AuthViewModel: ViewModel(){
     private val _authState = MutableStateFlow<AuthState>(AuthState())
-    private val auth = FirebaseAuth.getInstance()
+    val auth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
     private val storage = FirebaseStorage.getInstance()
     val authState = _authState.asStateFlow()

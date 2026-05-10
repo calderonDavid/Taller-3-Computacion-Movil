@@ -26,6 +26,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.taller3.AuthViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.taller3.navigation.AppScreens
 import com.example.taller3.util.ButtonShared
 
 @Composable
@@ -67,6 +68,9 @@ fun login(controller : NavController, model : AuthViewModel = viewModel() ){
         )
 
         ButtonShared("Login"){}
+        ButtonShared("Register"){
+            controller.navigate(AppScreens.register.name)
+        }
 
     }
 }
