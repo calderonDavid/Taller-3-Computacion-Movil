@@ -1,6 +1,7 @@
 package com.example.taller3.screens
 
 import android.provider.CalendarContract
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,13 +29,17 @@ import com.example.taller3.AuthViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.taller3.navigation.AppScreens
 import com.example.taller3.util.ButtonShared
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun login(controller : NavController, model : AuthViewModel = viewModel() ){
     val context = LocalContext.current
     val state by model.authState.collectAsState()
+    val auth = FirebaseAuth.getInstance()
     LaunchedEffect(Unit) {
-
+        auth.currentUser?.let{
+            controller.navigate(AppScreens.home.name)
+        }
     }
 
     Column(verticalArrangement = Arrangement.spacedBy(15.dp, Alignment.CenterVertically),
@@ -47,29 +52,35 @@ fun login(controller : NavController, model : AuthViewModel = viewModel() ){
         )
 
         OutlinedTextField(
-            value = "ejemplo@gmail.com",
+            value = state.email,
             onValueChange = {},
             label = { Text("email") },
             modifier = Modifier.fillMaxWidth(),
             supportingText = {
-                Text("I")
+                Text(state.emailError)
             }
         )
 
         OutlinedTextField(
-            value = "",
+            value = state.password,
             onValueChange = {},
             label = { Text("Password") },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation(),
             supportingText = {
-                Text("P")
+                Text(state.passwordError)
             }
         )
-
-        ButtonShared("Login"){}
-        ButtonShared("Register"){
-            controller.navigate(AppScreens.register.name)
+        ButtonShared("Login"){
+            if (validateForm(model, state.email, state.password)) {
+                auth.signInWithEmailAndPassword(state.email,state.password).addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        controller.navigate(AppScreens.home.name)
+                    } else {
+                        Toast.makeText(context,"Authentication failed",Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
         }
 
     }
