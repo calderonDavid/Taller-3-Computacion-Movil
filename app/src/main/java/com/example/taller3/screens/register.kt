@@ -1,5 +1,6 @@
 package com.example.taller3.screens
 
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -11,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,7 +30,7 @@ import com.example.taller3.util.ButtonShared
 fun register(controller: NavController, viewModel: AuthViewModel = viewModel()) {
 
     val state by viewModel.authState.collectAsState()
-
+    val context = LocalContext.current
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
@@ -123,6 +125,10 @@ fun register(controller: NavController, viewModel: AuthViewModel = viewModel()) 
                     viewModel.register(
                         onSuccess = {
                             controller.navigate(AppScreens.home.name)
+                        },
+                        onError = { errorMessage ->
+                            // <-- NUEVO: Mostrará el error de Firebase en la pantalla
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
                         }
                     )
                 }

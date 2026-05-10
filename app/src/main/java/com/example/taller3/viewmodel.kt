@@ -55,8 +55,12 @@ class AuthViewModel: ViewModel(){
     fun updateImageUri(newValue: Uri?) {
         _authState.update { it.copy(imageUri = newValue) }
     }
-    fun register(onSuccess: () -> Unit) {
+    fun register(onSuccess: () -> Unit, onError: (String) -> Unit) {
         val state = authState.value
+        if (state.email.isEmpty() || state.password.isEmpty()) {
+            onError("Email and password cannot be empty")
+            return
+        }
         auth.createUserWithEmailAndPassword(state.email, state.password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -66,6 +70,7 @@ class AuthViewModel: ViewModel(){
                         val upcrb = UserProfileChangeRequest.Builder()
                         upcrb.setDisplayName("${state.name} ${state.lastname}")
                         userAuth.updateProfile(upcrb.build())
+
                         val newUser = User(
                             name = state.name,
                             lastname = state.lastname,
@@ -74,33 +79,41 @@ class AuthViewModel: ViewModel(){
                             latitude = 0.0,
                             longitude = 0.0
                         )
+
                         if (state.imageUri != null) {
                             val storageRef = storage.getReference("profile_pictures/${userAuth.uid}.jpg")
-                            storageRef.putFile(state.imageUri).addOnSuccessListener {
-                                storageRef.downloadUrl.addOnSuccessListener { uri ->
-                                    saveUserToDatabase(newUser, userAuth.uid, uri.toString(), onSuccess)
+                            storageRef.putFile(state.imageUri!!)
+                                .addOnSuccessListener {
+                                    storageRef.downloadUrl.addOnSuccessListener { uri ->
+                                        saveUserToDatabase(newUser, userAuth.uid, uri.toString(), onSuccess, onError)
+                                    }
                                 }
-                            }
+                                .addOnFailureListener { e ->
+                                    // SI FALLA EL STORAGE, TE AVISARÁ
+                                    onError(e.message ?: "Error uploading image")
+                                }
                         } else {
-                            saveUserToDatabase(newUser, userAuth.uid, "", onSuccess)
+                            saveUserToDatabase(newUser, userAuth.uid, "", onSuccess, onError)
                         }
                     }
                 } else {
-                    Log.e("MYTAG", "Error: " + task.exception?.message)
+                    // AQUÍ ESTÁ LA MAGIA: SI FALLA LA AUTENTICACIÓN, TE AVISARÁ EN PANTALLA
+                    onError(task.exception?.message ?: "Authentication Failed")
                 }
             }
     }
 
+
     // Función auxiliar para guardar en Realtime Database
-    private fun saveUserToDatabase(user: User, uid: String, imageUrl: String, onSuccess: () -> Unit) {
+    private fun saveUserToDatabase(user: User, uid: String, imageUrl: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
         val finalUser = user.copy(
             uid = uid,
             profilePictureUrl = imageUrl,
             isAvailable = true
         )
         val myRef = database.getReference("users/$uid")
-        myRef.setValue(finalUser).addOnSuccessListener {
-            onSuccess()
-        }
+        myRef.setValue(finalUser)
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { e -> onError(e.message ?: "Database Error") }
     }
 }
