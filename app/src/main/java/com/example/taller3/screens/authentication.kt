@@ -53,7 +53,7 @@ fun login(controller : NavController, model : AuthViewModel = viewModel() ){
 
         OutlinedTextField(
             value = state.email,
-            onValueChange = {},
+            onValueChange = {model.updateEmail(it)},
             label = { Text("email") },
             modifier = Modifier.fillMaxWidth(),
             supportingText = {
@@ -63,7 +63,7 @@ fun login(controller : NavController, model : AuthViewModel = viewModel() ){
 
         OutlinedTextField(
             value = state.password,
-            onValueChange = {},
+            onValueChange = {model.updatePassword(it)},
             label = { Text("Password") },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation(),
