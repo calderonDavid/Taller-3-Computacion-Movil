@@ -11,7 +11,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,10 +25,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.taller3.AuthViewModel
-
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.taller3.util.ButtonShared
 
 @Composable
-fun login(controller : NavController, model : AuthViewModel = viweModel() ){
+fun login(controller : NavController, model : AuthViewModel = viewModel() ){
     val context = LocalContext.current
     val state by model.authState.collectAsState()
     LaunchedEffect(Unit) {
@@ -46,15 +46,14 @@ fun login(controller : NavController, model : AuthViewModel = viweModel() ){
         )
 
         OutlinedTextField(
-            value = "ejemplo@gmail.com",//state.email,
-            onValueChange = {},//model.updateEmail(newValue = it)},
+            value = "ejemplo@gmail.com",
+            onValueChange = {},
             label = { Text("email") },
             modifier = Modifier.fillMaxWidth(),
             supportingText = {
                 Text("I")
             }
         )
-
 
         OutlinedTextField(
             value = "",
@@ -66,29 +65,13 @@ fun login(controller : NavController, model : AuthViewModel = viweModel() ){
                 Text("P")
             }
         )
-        /*
 
-        MyButton("Login") {
-            if (validateForm(model, state.email, state.password)){
-                //Firebase
-                auth.signInWithEmailAndPassword(state.email, state.password).addOnCompleteListener {
-                    if(it.isSuccessful){
-                        controller.navigate(AppScreens.home.name)
-                    }else{
-                        makeText(context, "Authentication failed", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-        }
+        ButtonShared("Login"){}
 
-    }
-
-    }
-
-*/
     }
 }
-/*
+
+
 fun validateForm(model: AuthViewModel,email:String, password:String):Boolean{
     if (email.isEmpty()){ model.updateEmailError("Email is empty")
         return false
@@ -103,9 +86,12 @@ fun validateForm(model: AuthViewModel,email:String, password:String):Boolean{
         return false
     }else{model.updatePasswordError("")}
     return true
-}*/
+}
 
-
+fun validEmailAddress(email:String):Boolean{
+    val regex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\$"
+    return email.matches(regex.toRegex())
+}
 
 @Preview(showBackground = true)
 @Composable
