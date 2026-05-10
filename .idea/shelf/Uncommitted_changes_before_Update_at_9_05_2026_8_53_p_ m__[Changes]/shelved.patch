@@ -1,0 +1,101 @@
+Index: app/src/main/java/com/example/taller3/model/data.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/taller3/model/data.kt b/app/src/main/java/com/example/taller3/model/user.kt
+rename from app/src/main/java/com/example/taller3/model/data.kt
+rename to app/src/main/java/com/example/taller3/model/user.kt
+--- a/app/src/main/java/com/example/taller3/model/data.kt	(revision 4752025f362ad2c2c1c874dac2e000f982aaf72a)
++++ b/app/src/main/java/com/example/taller3/model/user.kt	(date 1778376669290)
+@@ -2,12 +2,12 @@
+ 
+ data class User(
+     val uid: String = "",
+-    val nombre: String = "",
+-    val apellido: String = "",
++    val name: String = "",
++    val lastname: String = "",
+     val email: String = "",
+-    val idNumber: String = "",
+-    val profilePicUrl: String = "",
++    val id: String = "",
++    val profilePictureUrl: String = "",
+     val latitude: Double = 0.0,
+     val longitude: Double = 0.0,
+-    val disponible: Boolean = false
++    val isAvailable: Boolean = false
+ )
+\ No newline at end of file
+Index: app/src/main/java/com/example/taller3/screens/register.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/taller3/screens/register.kt b/app/src/main/java/com/example/taller3/screens/register.kt
+new file mode 100644
+--- /dev/null	(date 1778377443106)
++++ b/app/src/main/java/com/example/taller3/screens/register.kt	(date 1778377443106)
+@@ -0,0 +1,2 @@
++package com.example.taller3.screens
++
+Index: app/google-services.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/google-services.json b/app/google-services.json
+new file mode 100644
+--- /dev/null	(date 1778377532939)
++++ b/app/google-services.json	(date 1778377532939)
+@@ -0,0 +1,49 @@
++{
++  "project_info": {
++    "project_number": "826063266545",
++    "firebase_url": "https://taller3-computaction-default-rtdb.firebaseio.com",
++    "project_id": "taller3-computaction",
++    "storage_bucket": "taller3-computaction.firebasestorage.app"
++  },
++  "client": [
++    {
++      "client_info": {
++        "mobilesdk_app_id": "1:826063266545:android:10a07e3a92a814e5a53f50",
++        "android_client_info": {
++          "package_name": "com.example.taller2"
++        }
++      },
++      "oauth_client": [],
++      "api_key": [
++        {
++          "current_key": "AIzaSyCf2TdLPaWxo-RKIySL-TgXiy_URUFhx3s"
++        }
++      ],
++      "services": {
++        "appinvite_service": {
++          "other_platform_oauth_client": []
++        }
++      }
++    },
++    {
++      "client_info": {
++        "mobilesdk_app_id": "1:826063266545:android:b5e5dbb898467fd0a53f50",
++        "android_client_info": {
++          "package_name": "com.example.taller3"
++        }
++      },
++      "oauth_client": [],
++      "api_key": [
++        {
++          "current_key": "AIzaSyCf2TdLPaWxo-RKIySL-TgXiy_URUFhx3s"
++        }
++      ],
++      "services": {
++        "appinvite_service": {
++          "other_platform_oauth_client": []
++        }
++      }
++    }
++  ],
++  "configuration_version": "1"
++}
+\ No newline at end of file
