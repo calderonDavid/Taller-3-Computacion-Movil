@@ -1,7 +1,14 @@
 package com.example.taller3
 
+import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.room.util.copy
+import com.example.taller3.model.User
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -11,11 +18,18 @@ data class AuthState(
     val email : String = "",
     val password : String="",
     val emailError:String="",
-    val passwordError:String=""
+    val passwordError:String="",
+    val name: String = "",
+    val lastname: String = "",
+    val idNumber: String = "",
+    val imageUri: Uri? = null
 )
 
 class AuthViewModel: ViewModel(){
     private val _authState = MutableStateFlow<AuthState>(AuthState())
+    private val auth = FirebaseAuth.getInstance()
+    private val database = FirebaseDatabase.getInstance()
+    private val storage = FirebaseStorage.getInstance()
     val authState = _authState.asStateFlow()
 
     fun updateEmail(newValue : String){
@@ -29,5 +43,65 @@ class AuthViewModel: ViewModel(){
     }
     fun updatePasswordError(newValue : String){
         _authState.update { it.copy(passwordError= newValue) }
+    }
+    fun updateName(newValue: String) {
+        _authState.update { it.copy(name = newValue) }
+    }
+    fun updateLastname(newValue: String) {
+        _authState.update { it.copy(lastname = newValue) }
+    }
+    fun updateIdNumber(newValue: String) {
+        _authState.update { it.copy(idNumber = newValue) }
+    }
+    fun updateImageUri(newValue: Uri?) {
+        _authState.update { it.copy(imageUri = newValue) }
+    }
+    fun register(onSuccess: () -> Unit) {
+        val state = authState.value
+        auth.createUserWithEmailAndPassword(state.email, state.password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val firebaseUser = auth.currentUser
+
+                    firebaseUser?.let { userAuth ->
+                        val upcrb = UserProfileChangeRequest.Builder()
+                        upcrb.setDisplayName("${state.name} ${state.lastname}")
+                        userAuth.updateProfile(upcrb.build())
+                        val newUser = User(
+                            name = state.name,
+                            lastname = state.lastname,
+                            id = state.idNumber,
+                            email = state.email,
+                            latitude = 0.0,
+                            longitude = 0.0
+                        )
+                        if (state.imageUri != null) {
+                            val storageRef = storage.getReference("profile_pictures/${userAuth.uid}.jpg")
+                            storageRef.putFile(state.imageUri).addOnSuccessListener {
+                                storageRef.downloadUrl.addOnSuccessListener { uri ->
+                                    saveUserToDatabase(newUser, userAuth.uid, uri.toString(), onSuccess)
+                                }
+                            }
+                        } else {
+                            saveUserToDatabase(newUser, userAuth.uid, "", onSuccess)
+                        }
+                    }
+                } else {
+                    Log.e("MYTAG", "Error: " + task.exception?.message)
+                }
+            }
+    }
+
+    // Función auxiliar para guardar en Realtime Database
+    private fun saveUserToDatabase(user: User, uid: String, imageUrl: String, onSuccess: () -> Unit) {
+        val finalUser = user.copy(
+            uid = uid,
+            profilePictureUrl = imageUrl,
+            isAvailable = true
+        )
+        val myRef = database.getReference("users/$uid")
+        myRef.setValue(finalUser).addOnSuccessListener {
+            onSuccess()
+        }
     }
 }
