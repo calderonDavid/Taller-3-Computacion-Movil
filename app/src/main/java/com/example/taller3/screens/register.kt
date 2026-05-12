@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,9 +24,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.taller3.AuthViewModel
+import com.example.taller3.R
 import com.example.taller3.navigation.AppScreens
 import com.example.taller3.util.ButtonShared
-import com.example.taller3.util.validateForm
+import com.example.taller3.util.validateRegisterForm
 
 
 @Composable
@@ -86,7 +88,12 @@ fun register(controller: NavController, viewModel: AuthViewModel = viewModel()) 
                     value = state.name,
                     onValueChange = { viewModel.updateName(it) },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Enter your first name") }
+                    label = { Text("Enter your first name") },
+                    isError = state.nameError.isNotEmpty(),
+                    supportingText = {
+                        if (state.nameError.isNotEmpty())
+                            Text(text = state.nameError, color = colorResource(R.color.RojoOscuro))
+                    }
                 )
 
                 Text(text = "Last Name", fontSize = 20.sp, fontWeight = FontWeight.Bold)
@@ -94,7 +101,12 @@ fun register(controller: NavController, viewModel: AuthViewModel = viewModel()) 
                     value = state.lastname,
                     onValueChange = { viewModel.updateLastname(it) },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Enter your last name") }
+                    label = { Text("Enter your last name") },
+                    isError = state.lastnameError.isNotEmpty(),
+                    supportingText = {
+                        if (state.lastnameError.isNotEmpty())
+                            Text(text = state.lastnameError, color = colorResource(R.color.RojoOscuro))
+                    }
                 )
 
                 Text(text = "ID Number", fontSize = 20.sp, fontWeight = FontWeight.Bold)
@@ -102,7 +114,12 @@ fun register(controller: NavController, viewModel: AuthViewModel = viewModel()) 
                     value = state.idNumber,
                     onValueChange = { viewModel.updateIdNumber(it) },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Enter your ID number") }
+                    label = { Text("Enter your ID number") },
+                    isError = state.idError.isNotEmpty(),
+                    supportingText = {
+                        if (state.idError.isNotEmpty())
+                            Text(text = state.idError, color = colorResource(R.color.RojoOscuro))
+                    }
                 )
 
                 Text(text = "Email", fontSize = 20.sp, fontWeight = FontWeight.Bold)
@@ -114,7 +131,7 @@ fun register(controller: NavController, viewModel: AuthViewModel = viewModel()) 
                     isError = state.emailError.isNotEmpty(),
                     supportingText = {
                         if (state.emailError.isNotEmpty()) {
-                            Text(text = state.emailError, color = MaterialTheme.colorScheme.error)
+                            Text(text = state.emailError, color = colorResource(R.color.RojoOscuro))
                         }
                     }
                 )
@@ -129,15 +146,19 @@ fun register(controller: NavController, viewModel: AuthViewModel = viewModel()) 
                     isError = state.passwordError.isNotEmpty(),
                     supportingText = {
                         if (state.passwordError.isNotEmpty()) {
-                            Text(text = state.passwordError, color = MaterialTheme.colorScheme.error)
+                            Text(text = state.passwordError, color = colorResource(R.color.RojoOscuro))
                         }
                     }
                 )
                 Spacer(modifier = Modifier.height(32.dp))
 
                 ButtonShared(text = "Register") {
-                    val isValid = validateForm(viewModel, state.email, state.password)
+                    val isValid = validateRegisterForm(viewModel, state)
 
+                    if (state.imageUri == null) {
+                        Toast.makeText(context, "Please select a profile picture", Toast.LENGTH_SHORT).show()
+                        return@ButtonShared
+                    }
                     if (isValid) {
                         viewModel.register(
                             onSuccess = {

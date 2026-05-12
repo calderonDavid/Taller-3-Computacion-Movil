@@ -21,7 +21,10 @@ data class AuthState(
     val name: String = "",
     val lastname: String = "",
     val idNumber: String = "",
-    val imageUri: Uri? = null
+    val imageUri: Uri? = null,
+    val nameError: String = "",
+    val lastnameError: String = "",
+    val idError: String = ""
 )
 
 class AuthViewModel: ViewModel(){
@@ -54,6 +57,15 @@ class AuthViewModel: ViewModel(){
     }
     fun updateImageUri(newValue: Uri?) {
         _authState.update { it.copy(imageUri = newValue) }
+    }
+    fun updateNameError(newValue: String) {
+        _authState.update { it.copy(nameError = newValue) }
+    }
+    fun updateLastnameError(newValue: String) {
+        _authState.update { it.copy(lastnameError = newValue) }
+    }
+    fun updateIdError(newValue: String) {
+        _authState.update { it.copy(idError = newValue) }
     }
     fun register(onSuccess: () -> Unit, onError: (String) -> Unit) {
         val state = authState.value
@@ -89,7 +101,6 @@ class AuthViewModel: ViewModel(){
                                     }
                                 }
                                 .addOnFailureListener { e ->
-                                    // SI FALLA EL STORAGE, TE AVISARÁ
                                     onError(e.message ?: "Error uploading image")
                                 }
                         } else {
@@ -97,14 +108,10 @@ class AuthViewModel: ViewModel(){
                         }
                     }
                 } else {
-                    // AQUÍ ESTÁ LA MAGIA: SI FALLA LA AUTENTICACIÓN, TE AVISARÁ EN PANTALLA
                     onError(task.exception?.message ?: "Authentication Failed")
                 }
             }
     }
-
-
-    // Función auxiliar para guardar en Realtime Database
     private fun saveUserToDatabase(user: User, uid: String, imageUrl: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
         val finalUser = user.copy(
             uid = uid,

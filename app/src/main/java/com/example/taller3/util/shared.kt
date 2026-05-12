@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import com.example.taller3.AuthState
 import com.example.taller3.AuthViewModel
 import com.example.taller3.R
 
@@ -29,20 +30,62 @@ fun ButtonShared(text: String, action : ()->Unit ) {
 
 
 
-fun validateForm(model: AuthViewModel,email:String, password:String):Boolean{
-    if (email.isEmpty()){ model.updateEmailError("Email is empty")
+fun validateLoginForm(model: AuthViewModel,state: AuthState):Boolean{
+    if (state.email.isEmpty()){ model.updateEmailError("Email is empty")
         return false
     }else{model.updateEmailError("")}
-    if(!validEmailAddress(email)){model.updateEmailError("Not a valid address")
+    if(!validEmailAddress(state.email)){model.updateEmailError("Not a valid address")
         return false
     }else{model.updateEmailError("")}
-    if(password.isEmpty()) {model.updatePasswordError("Password is empty")
+    if(state.password.isEmpty()) {model.updatePasswordError("Password is empty")
         return false
     }else{model.updatePasswordError("")}
-    if(password.length < 6) {model.updatePasswordError("Password is too short")
+    if(state.password.length < 6) {model.updatePasswordError("Password is too short")
         return false
     }else{model.updatePasswordError("")}
     return true
+}
+
+fun validateRegisterForm(model: AuthViewModel, state: AuthState): Boolean {
+    if (state.name.isEmpty()) {
+        model.updateNameError("Name is required")
+        return false
+    } else {
+        model.updateNameError("")
+    }
+    if (state.lastname.isEmpty()) {
+        model.updateLastnameError("Last name is required")
+        return false
+    } else {
+        model.updateLastnameError("")
+    }
+    if (state.idNumber.isEmpty()) {
+        model.updateIdError("ID is required")
+        return false
+    } else {
+        model.updateIdError("")
+    }
+    if (state.email.isEmpty()) {
+        model.updateEmailError("Email is empty")
+        return false
+    } else if (!validEmailAddress(state.email)) {
+        model.updateEmailError("Not a valid address")
+        return false
+    } else {
+        model.updateEmailError("")
+    }
+    if (state.password.isEmpty()) {
+        model.updatePasswordError("Password is empty")
+        return false
+    } else if (state.password.length < 6) {
+        model.updatePasswordError("Password is too short")
+        return false
+    } else {
+        model.updatePasswordError("")
+    }
+    val isLoginValid = validateLoginForm(model, state)
+
+    return isLoginValid
 }
 
 fun validEmailAddress(email:String):Boolean{

@@ -30,8 +30,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.taller3.navigation.AppScreens
 import com.example.taller3.util.ButtonShared
 import com.google.firebase.auth.FirebaseAuth
-import com.example.taller3.util.validateForm
-
+import com.example.taller3.util.validateLoginForm
 
 
 @Composable
@@ -75,7 +74,7 @@ fun login(controller : NavController, model : AuthViewModel = viewModel() ){
             }
         )
         ButtonShared("Login"){
-            if (validateForm(model, state.email, state.password)) {
+            if (validateLoginForm(model, state)) {
                 auth.signInWithEmailAndPassword(state.email,state.password).addOnCompleteListener {
                     if (it.isSuccessful) {
                         controller.navigate(AppScreens.home.name)
