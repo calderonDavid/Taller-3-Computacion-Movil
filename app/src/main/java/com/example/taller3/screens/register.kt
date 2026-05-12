@@ -25,6 +25,8 @@ import coil.compose.AsyncImage
 import com.example.taller3.AuthViewModel
 import com.example.taller3.navigation.AppScreens
 import com.example.taller3.util.ButtonShared
+import com.example.taller3.util.validateForm
+
 
 @Composable
 fun register(controller: NavController, viewModel: AuthViewModel = viewModel()) {
