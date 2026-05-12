@@ -27,9 +27,6 @@ fun ButtonShared(text: String, action : ()->Unit ) {
         Text(text)
     }
 }
-
-
-
 fun validateLoginForm(model: AuthViewModel,state: AuthState):Boolean{
     if (state.email.isEmpty()){ model.updateEmailError("Email is empty")
         return false

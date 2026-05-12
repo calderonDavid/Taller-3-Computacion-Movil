@@ -1,5 +1,7 @@
 package com.example.taller3
 
+import android.hardware.Sensor
+import android.hardware.SensorManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,10 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.taller3.navigation.Navigation
 import com.example.taller3.ui.theme.Taller3Theme
-
+var lightSensor : Sensor? = null
+lateinit var sensorManager: SensorManager
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         enableEdgeToEdge()
         setContent {
             Navigation()

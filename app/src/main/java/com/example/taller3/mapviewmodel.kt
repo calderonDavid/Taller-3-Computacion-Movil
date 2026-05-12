@@ -3,6 +3,10 @@ package com.example.taller3
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.example.taller3.model.POI
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.Priority
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -62,5 +66,30 @@ class MapViewModel : ViewModel() {
             userRef.updateChildren(locationUpdates)
         }
     }
-
+    fun createLocationRequest() : LocationRequest{
+        val locationRequest = LocationRequest.Builder(
+            Priority.PRIORITY_HIGH_ACCURACY, 10000)
+            .setWaitForAccurateLocation(true)
+            .setMinUpdateIntervalMillis(10000)
+            .build()
+        return locationRequest
+    }
+    fun createLocationCallback(onLocationChange : (LocationResult)-> Unit): LocationCallback {
+        val callback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                super.onLocationResult(locationResult)
+                onLocationChange(locationResult)
+            }
+        }
+        return callback
+    }
+    fun logOut() {
+        auth.signOut()
+    }
+    fun setAvailableStatus(isAvailable: Boolean) {
+        val uid = auth.currentUser?.uid
+        if (uid != null) {
+            database.getReference("users/$uid/available").setValue(isAvailable)
+        }
+    }
 }
