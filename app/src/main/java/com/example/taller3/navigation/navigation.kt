@@ -1,10 +1,13 @@
 package com.example.taller3.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.taller3.AuthViewModel
+import com.example.taller3.MapViewModel
 import com.example.taller3.screens.login
 import com.example.taller3.screens.register
 import com.example.taller3.screens.home
