@@ -30,6 +30,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.taller3.navigation.AppScreens
 import com.example.taller3.util.ButtonShared
 import com.google.firebase.auth.FirebaseAuth
+import com.example.taller3.util.validateForm
+
+
 
 @Composable
 fun login(controller : NavController, model : AuthViewModel = viewModel() ){
@@ -90,26 +93,6 @@ fun login(controller : NavController, model : AuthViewModel = viewModel() ){
 }
 
 
-fun validateForm(model: AuthViewModel,email:String, password:String):Boolean{
-    if (email.isEmpty()){ model.updateEmailError("Email is empty")
-        return false
-    }else{model.updateEmailError("")}
-    if(!validEmailAddress(email)){model.updateEmailError("Not a valid address")
-        return false
-    }else{model.updateEmailError("")}
-    if(password.isEmpty()) {model.updatePasswordError("Password is empty")
-        return false
-    }else{model.updatePasswordError("")}
-    if(password.length < 6) {model.updatePasswordError("Password is too short")
-        return false
-    }else{model.updatePasswordError("")}
-    return true
-}
-
-fun validEmailAddress(email:String):Boolean{
-    val regex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\$"
-    return email.matches(regex.toRegex())
-}
 
 @Preview(showBackground = true)
 @Composable
