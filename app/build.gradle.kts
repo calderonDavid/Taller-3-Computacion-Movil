@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.firebase.database)
+    implementation(libs.firebase.storage)
     implementation(libs.googleid)
     implementation("androidx.navigation:navigation-runtime-ktx:2.8.0")
     implementation("com.google.firebase:firebase-database-ktx")

@@ -108,7 +108,13 @@ fun register(controller: NavController, viewModel: AuthViewModel = viewModel()) 
                     value = state.email,
                     onValueChange = { viewModel.updateEmail(it) },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Enter your email") }
+                    label = { Text("Enter your email") },
+                    isError = state.emailError.isNotEmpty(),
+                    supportingText = {
+                        if (state.emailError.isNotEmpty()) {
+                            Text(text = state.emailError, color = MaterialTheme.colorScheme.error)
+                        }
+                    }
                 )
 
                 Text(text = "Password", fontSize = 20.sp, fontWeight = FontWeight.Bold)
@@ -117,20 +123,29 @@ fun register(controller: NavController, viewModel: AuthViewModel = viewModel()) 
                     onValueChange = { viewModel.updatePassword(it) },
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text("Enter your password") },
-                    visualTransformation = PasswordVisualTransformation()
+                    visualTransformation = PasswordVisualTransformation(),
+                    isError = state.passwordError.isNotEmpty(),
+                    supportingText = {
+                        if (state.passwordError.isNotEmpty()) {
+                            Text(text = state.passwordError, color = MaterialTheme.colorScheme.error)
+                        }
+                    }
                 )
                 Spacer(modifier = Modifier.height(32.dp))
 
                 ButtonShared(text = "Register") {
-                    viewModel.register(
-                        onSuccess = {
-                            controller.navigate(AppScreens.home.name)
-                        },
-                        onError = { errorMessage ->
-                            // <-- NUEVO: Mostrará el error de Firebase en la pantalla
-                            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
-                        }
-                    )
+                    val isValid = validateForm(viewModel, state.email, state.password)
+
+                    if (isValid) {
+                        viewModel.register(
+                            onSuccess = {
+                                controller.navigate(AppScreens.home.name)
+                            },
+                            onError = { errorMessage ->
+                                Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                            }
+                        )
+                    }
                 }
             }
         }

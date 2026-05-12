@@ -9,9 +9,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.example.taller3" />
-                  <option name="mobileSdkAppId" value="1:826063266545:android:b5e5dbb898467fd0a53f50" />
-                  <option name="projectId" value="taller3-computaction" />
-                  <option name="projectNumber" value="826063266545" />
+                  <option name="mobileSdkAppId" value="1:459271789842:android:f4807035b90fa2b114e7cb" />
+                  <option name="projectId" value="taller3-david-santiago" />
+                  <option name="projectNumber" value="459271789842" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
