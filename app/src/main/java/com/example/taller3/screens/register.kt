@@ -155,10 +155,6 @@ fun register(controller: NavController, viewModel: AuthViewModel = viewModel()) 
                 ButtonShared(text = "Register") {
                     val isValid = validateRegisterForm(viewModel, state)
 
-                    if (state.imageUri == null) {
-                        Toast.makeText(context, "Please select a profile picture", Toast.LENGTH_SHORT).show()
-                        return@ButtonShared
-                    }
                     if (isValid) {
                         viewModel.register(
                             onSuccess = {
