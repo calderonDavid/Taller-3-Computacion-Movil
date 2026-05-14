@@ -68,9 +68,9 @@ class MapViewModel : ViewModel() {
     }
     fun createLocationRequest() : LocationRequest{
         val locationRequest = LocationRequest.Builder(
-            Priority.PRIORITY_HIGH_ACCURACY, 10000)
+            Priority.PRIORITY_HIGH_ACCURACY, 5000)
             .setWaitForAccurateLocation(true)
-            .setMinUpdateIntervalMillis(10000)
+            .setMinUpdateIntervalMillis(5000)
             .build()
         return locationRequest
     }

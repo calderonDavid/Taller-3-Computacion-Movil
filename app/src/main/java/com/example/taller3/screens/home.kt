@@ -106,7 +106,7 @@ fun LocationWithRequest(navController: NavController, viewModel: MapViewModel) {
     var currentMapStyle by remember { mutableStateOf(lightMapStyle)}
 
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(LatLng(4.628308, -74.064929), 12f) // Default a Bogotá
+        position = CameraPosition.fromLatLngZoom(LatLng(state.currentLat, state.currentLng), 16f)
     }
 
     val locationCallback = remember {
@@ -115,7 +115,7 @@ fun LocationWithRequest(navController: NavController, viewModel: MapViewModel) {
                 viewModel.updateUserLocation(location.latitude, location.longitude)
 
                 cameraPositionState.position = CameraPosition.fromLatLngZoom(
-                    LatLng(location.latitude, location.longitude), 14f
+                    LatLng(location.latitude, location.longitude), 16f
                 )
             }
         }
