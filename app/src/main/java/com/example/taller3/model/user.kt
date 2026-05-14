@@ -9,5 +9,5 @@ data class User(
     val profilePictureUrl: String = "",
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
-    val isAvailable: Boolean = false
+    val available: Boolean = false
 )

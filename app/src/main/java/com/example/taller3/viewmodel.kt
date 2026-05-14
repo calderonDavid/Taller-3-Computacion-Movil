@@ -1,7 +1,6 @@
 package com.example.taller3
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.taller3.model.User
 import com.google.firebase.auth.FirebaseAuth
@@ -98,7 +97,7 @@ class AuthViewModel: ViewModel(){
 
                         if (state.imageUri != null) {
                             val storageRef = storage.getReference("profile_pictures/${userAuth.uid}.jpg")
-                            storageRef.putFile(state.imageUri!!)
+                            storageRef.putFile(state.imageUri)
                                 .addOnSuccessListener {
                                     storageRef.downloadUrl.addOnSuccessListener { uri ->
                                         saveUserToDatabase(newUser, userAuth.uid, uri.toString(), onSuccess, onError)
