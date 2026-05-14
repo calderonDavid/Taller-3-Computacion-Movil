@@ -119,7 +119,7 @@ class AuthViewModel: ViewModel(){
         val finalUser = user.copy(
             uid = uid,
             profilePictureUrl = imageUrl,
-            isAvailable = false
+            available = false
         )
         val myRef = database.getReference("users/$uid")
         myRef.setValue(finalUser)
