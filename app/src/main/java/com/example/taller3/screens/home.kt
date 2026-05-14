@@ -9,7 +9,9 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Looper
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
@@ -22,9 +24,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.taller3.AuthViewModel
 import com.example.taller3.MapViewModel
 import com.example.taller3.lightSensor
 import com.example.taller3.navigation.AppScreens
@@ -33,11 +37,7 @@ import com.example.taller3.util.ButtonShared
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -53,7 +53,7 @@ val locationPermission = Manifest.permission.ACCESS_FINE_LOCATION
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun home(controller: NavController, viewModel: MapViewModel = viewModel()) {
+fun home(controller: NavController, mapViewModel: MapViewModel = viewModel(),viewModel: AuthViewModel =viewModel()) {
     val permission = rememberPermissionState(locationPermission)
     var showButton by remember { mutableStateOf(false) }
 
@@ -69,7 +69,7 @@ fun home(controller: NavController, viewModel: MapViewModel = viewModel()) {
     }
 
     if (permission.status.isGranted) {
-        LocationWithRequest(controller, viewModel)
+        LocationWithRequest(controller, mapViewModel,viewModel)
     } else {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -78,7 +78,7 @@ fun home(controller: NavController, viewModel: MapViewModel = viewModel()) {
         ) {
             if (showButton) {
                 Text("Access to GPS is Mandatory for this app.")
-                ButtonShared("Request Location Permission"){
+                ButtonShared("Request Location Permission") {
                     permission.launchPermissionRequest()
                 }
             } else {
@@ -87,32 +87,35 @@ fun home(controller: NavController, viewModel: MapViewModel = viewModel()) {
         }
     }
 }
+
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LocationWithRequest(navController: NavController, viewModel: MapViewModel) {
+fun LocationWithRequest(navController: NavController, mapViewModel: MapViewModel, viewModel: AuthViewModel) {
     val context = LocalContext.current
-    val state by viewModel.mapState.collectAsState()
+    val state by mapViewModel.mapState.collectAsState()
+    val auth by viewModel.authState.collectAsState()
     LaunchedEffect(Unit) {
-        viewModel.loadPOIsFromJson(context)
+        mapViewModel.loadPOIsFromJson(context)
+        viewModel.fetchInitialStatus()
     }
 
     val locationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
-    val locationRequest = viewModel.createLocationRequest()
+    val locationRequest = mapViewModel.createLocationRequest()
 
     val lightMapStyle = MapStyleOptions.loadRawResourceStyle(context, R.raw.lightmap)
-    val darkMapStyle = MapStyleOptions.loadRawResourceStyle(context,R.raw.darkmap)
+    val darkMapStyle = MapStyleOptions.loadRawResourceStyle(context, R.raw.darkmap)
     lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
-    var currentMapStyle by remember { mutableStateOf(lightMapStyle)}
+    var currentMapStyle by remember { mutableStateOf(lightMapStyle) }
 
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(LatLng(state.currentLat, state.currentLng), 16f)
     }
 
     val locationCallback = remember {
-        viewModel.createLocationCallback { result ->
+        mapViewModel.createLocationCallback { result ->
             result.lastLocation?.let { location ->
-                viewModel.updateUserLocation(location.latitude, location.longitude)
+                mapViewModel.updateUserLocation(location.latitude, location.longitude)
 
                 cameraPositionState.position = CameraPosition.fromLatLngZoom(
                     LatLng(location.latitude, location.longitude), 16f
@@ -126,22 +129,35 @@ fun LocationWithRequest(navController: NavController, viewModel: MapViewModel) {
         override fun onSensorChanged(event: SensorEvent?) {
             if (event?.sensor?.type == Sensor.TYPE_LIGHT) {
                 val lux = event.values[0]
-                Log.i("MapApp"
-                    , lux.toString())
-                currentMapStyle = if(lux<2000) darkMapStyle else lightMapStyle
+                Log.i(
+                    "MapApp", lux.toString()
+                )
+                currentMapStyle = if (lux < 2000) darkMapStyle else lightMapStyle
             }
         }
     }
     DisposableEffect(Unit) {
-        lightSensor?.let{
-            sensorManager.registerListener(sensorListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL)
+        lightSensor?.let {
+            sensorManager.registerListener(
+                sensorListener,
+                lightSensor,
+                SensorManager.SENSOR_DELAY_NORMAL
+            )
         }
-        onDispose {  sensorManager.unregisterListener(sensorListener)}
+        onDispose { sensorManager.unregisterListener(sensorListener) }
     }
 
     DisposableEffect(Unit) {
-        if (ContextCompat.checkSelfPermission(context, locationPermission) == PackageManager.PERMISSION_GRANTED) {
-            locationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+        if (ContextCompat.checkSelfPermission(
+                context,
+                locationPermission
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            locationClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback,
+                Looper.getMainLooper()
+            )
         }
         onDispose {
             locationClient.removeLocationUpdates(locationCallback)
@@ -164,10 +180,10 @@ fun LocationWithRequest(navController: NavController, viewModel: MapViewModel) {
                         onDismissRequest = { expand = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Set Available") },
+                            text = { Text(if (auth.available) "Set Unavailable" else "Set Available")  },
                             onClick = {
                                 expand = false
-                                viewModel.setAvailableStatus(true)
+                                viewModel.toggleAvailability()
                             }
                         )
                         DropdownMenuItem(
@@ -197,7 +213,9 @@ fun LocationWithRequest(navController: NavController, viewModel: MapViewModel) {
             )
         }
     ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(padding)) {
             GoogleMap(
                 modifier = Modifier.fillMaxSize(),
                 cameraPositionState = cameraPositionState,
@@ -215,6 +233,33 @@ fun LocationWithRequest(navController: NavController, viewModel: MapViewModel) {
                     Marker(
                         state = MarkerState(LatLng(poi.latitude, poi.longitude)),
                         title = poi.name
+                    )
+                }
+            }
+            ElevatedButton(
+                onClick = {
+                    viewModel.toggleAvailability()
+                },
+                modifier = Modifier
+                    .align(Alignment.TopCenter).fillMaxWidth()
+                    .padding(all = 10.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+
+                    Box(
+                        modifier = Modifier
+                            .size(12.dp)
+                            .background(
+                                color = if (auth.available) colorResource(R.color.Verde) else colorResource(R.color.RojoPlano),
+                                shape = CircleShape
+                            )
+                    )
+                    Text(
+                        text = if (auth.available) "Available" else "Not Available",
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(R.color.black)
                     )
                 }
             }

@@ -24,7 +24,8 @@ data class AuthState(
     val imageUri: Uri? = null,
     val nameError: String = "",
     val lastnameError: String = "",
-    val idError: String = ""
+    val idError: String = "",
+    val available: Boolean = false
 )
 
 class AuthViewModel: ViewModel(){
@@ -66,6 +67,9 @@ class AuthViewModel: ViewModel(){
     }
     fun updateIdError(newValue: String) {
         _authState.update { it.copy(idError = newValue) }
+    }
+    fun updateAvailable(newValue: Boolean){
+        _authState.update {it.copy(available = newValue)}
     }
     fun register(onSuccess: () -> Unit, onError: (String) -> Unit) {
         val state = authState.value
@@ -122,5 +126,28 @@ class AuthViewModel: ViewModel(){
         myRef.setValue(finalUser)
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { e -> onError(e.message ?: "Database Error") }
+    }
+    fun logOut() {
+        auth.signOut()
+    }
+    fun fetchInitialStatus() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        if (uid != null) {
+            FirebaseDatabase.getInstance().getReference("users/$uid/isAvailable")
+                .get()
+                .addOnSuccessListener { snapshot ->
+                    val available = snapshot.getValue(Boolean::class.java) ?: false
+                    updateAvailable(available)
+                }
+        }
+    }
+
+    fun toggleAvailability() {
+        val newState = !_authState.value.available
+        updateAvailable(newState)
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        if (uid != null) {
+            FirebaseDatabase.getInstance().getReference("users/$uid/available").setValue(newState)
+        }
     }
 }

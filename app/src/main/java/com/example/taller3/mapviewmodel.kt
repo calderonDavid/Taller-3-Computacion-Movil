@@ -83,13 +83,5 @@ class MapViewModel : ViewModel() {
         }
         return callback
     }
-    fun logOut() {
-        auth.signOut()
-    }
-    fun setAvailableStatus(isAvailable: Boolean) {
-        val uid = auth.currentUser?.uid
-        if (uid != null) {
-            database.getReference("users/$uid/available").setValue(isAvailable)
-        }
-    }
+
 }
