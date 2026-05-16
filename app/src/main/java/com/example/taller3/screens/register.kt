@@ -23,7 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
-import com.example.taller3.AuthViewModel
+import com.example.taller3.view.AuthViewModel
 import com.example.taller3.R
 import com.example.taller3.navigation.AppScreens
 import com.example.taller3.util.ButtonShared
@@ -154,7 +154,10 @@ fun register(controller: NavController, viewModel: AuthViewModel = viewModel()) 
 
                 ButtonShared(text = "Register") {
                     val isValid = validateRegisterForm(viewModel, state)
-
+                    if (state.imageUri == null) {
+                        Toast.makeText(context, "Please select a profile picture", Toast.LENGTH_SHORT).show()
+                        return@ButtonShared
+                    }
                     if (isValid) {
                         viewModel.register(
                             onSuccess = {
