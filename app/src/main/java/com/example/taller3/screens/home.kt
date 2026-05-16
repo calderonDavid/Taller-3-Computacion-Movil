@@ -294,7 +294,7 @@ fun LocationWithRequest(navController: NavController, mapViewModel: MapViewModel
                             modifier = Modifier
                                 .size(12.dp)
                                 .background(
-                                    color = if (auth.isSubscribed) colorResource(R.color.Verde) else colorResource(R.color.RojoPlano),
+                                    color = if (auth.isSubscribed) colorResource(R.color.RojoPlano) else colorResource(R.color.Verde),
                                     shape = CircleShape
                                 )
                         )

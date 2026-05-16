@@ -1,9 +1,11 @@
 package com.example.taller3.services
 
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.taller3.MainActivity
@@ -25,6 +27,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
     private fun showNotification(title: String, message: String, trackUserId: String?) {
         val notManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel =
+                NotificationChannel("fcm_channel", "FCM", NotificationManager.IMPORTANCE_HIGH)
+            notManager.createNotificationChannel(channel)
+        }
 
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
