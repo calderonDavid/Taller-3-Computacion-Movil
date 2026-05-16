@@ -40,8 +40,10 @@ fun Navigation(){
         composable(route = AppScreens.userList.name){
             userlist(navController)
         }
-        composable(route = AppScreens.tracking.name){
-            mapTracker()
+        composable(route = "${AppScreens.tracking.name}/{id}") {
+            backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("id") ?: ""
+            mapTracker(navController, userId)
         }
     }
 }

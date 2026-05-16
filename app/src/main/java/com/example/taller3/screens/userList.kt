@@ -85,7 +85,7 @@ fun userlist(navController: NavController) {
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Usuarios Disponibles")
+                    Text("Usuarios Disponibles", color = Color.White)
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = colorResource(id = R.color.Rojo)

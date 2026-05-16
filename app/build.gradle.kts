@@ -43,6 +43,8 @@ android {
 
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
+    implementation("org.osmdroid:osmdroid-android:6.1.16")
+    implementation("com.github.MKergall:osmbonuspack:6.9.0")
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
