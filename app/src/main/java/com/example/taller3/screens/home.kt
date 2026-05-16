@@ -2,6 +2,7 @@ package com.example.taller3.screens
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -9,6 +10,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Looper
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -88,11 +90,17 @@ fun home(controller: NavController, mapViewModel: MapViewModel = viewModel(),vie
     }
 }
 
-@SuppressLint("UnrememberedMutableState")
+@SuppressLint("UnrememberedMutableState", "ContextCastToActivity")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LocationWithRequest(navController: NavController, mapViewModel: MapViewModel, viewModel: AuthViewModel) {
     val context = LocalContext.current
+    val activity = LocalContext.current as? Activity
+
+    BackHandler(enabled = true) {
+        activity?.finish()
+    }
+
     val state by mapViewModel.mapState.collectAsState()
     val auth by viewModel.authState.collectAsState()
     LaunchedEffect(Unit) {
@@ -179,13 +187,6 @@ fun LocationWithRequest(navController: NavController, mapViewModel: MapViewModel
                         expanded = expand,
                         onDismissRequest = { expand = false }
                     ) {
-                        DropdownMenuItem(
-                            text = { Text(if (auth.available) "Set Unavailable" else "Set Available")  },
-                            onClick = {
-                                expand = false
-                                viewModel.toggleAvailability()
-                            }
-                        )
                         DropdownMenuItem(
                             text = { Text("List of Users") },
                             onClick = {

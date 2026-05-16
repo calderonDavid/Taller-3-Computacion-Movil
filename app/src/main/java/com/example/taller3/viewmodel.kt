@@ -129,10 +129,11 @@ class AuthViewModel: ViewModel(){
     fun logOut() {
         auth.signOut()
     }
+
     fun fetchInitialStatus() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid
         if (uid != null) {
-            FirebaseDatabase.getInstance().getReference("users/$uid/isAvailable")
+            FirebaseDatabase.getInstance().getReference("users/$uid/available")
                 .get()
                 .addOnSuccessListener { snapshot ->
                     val available = snapshot.getValue(Boolean::class.java) ?: false
