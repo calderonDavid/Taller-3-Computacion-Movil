@@ -1,4 +1,4 @@
-package com.example.taller3
+package com.example.taller3.view
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.osmdroid.bonuspack.routing.OSRMRoadManager
+import org.osmdroid.bonuspack.routing.Road
 import org.osmdroid.util.GeoPoint
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -79,7 +80,7 @@ class TrackingViewModel : ViewModel() {
                     val waypoints = arrayListOf(startPoint, endPoint)
 
                     val road = roadManager.getRoad(waypoints)
-                    if (road.mStatus == org.osmdroid.bonuspack.routing.Road.STATUS_OK) {
+                    if (road.mStatus == Road.STATUS_OK) {
                         val points = road.mRouteHigh.map { LatLng(it.latitude, it.longitude) }
                         _trackingState.update { it.copy(routePoints = points) }
                     }

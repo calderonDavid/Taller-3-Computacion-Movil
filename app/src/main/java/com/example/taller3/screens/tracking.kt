@@ -3,6 +3,10 @@ package com.example.taller3.screens
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Looper
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -24,11 +28,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.taller3.view.MapViewModel
 import com.example.taller3.R
-import com.example.taller3.TrackingViewModel
+import com.example.taller3.view.TrackingViewModel
+import com.example.taller3.lightSensor
+import com.example.taller3.sensorManager
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.*
 
 @SuppressLint("MissingPermission")
@@ -37,24 +44,49 @@ import com.google.maps.android.compose.*
 fun mapTracker(
     navController: NavController,
     targetUserId: String,
-    mapViewModel: MapViewModel = viewModel(), // Reutilizamos este para la lógica de ubicación
+    mapViewModel: MapViewModel = viewModel(),
     trackingViewModel: TrackingViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val state by trackingViewModel.trackingState.collectAsState()
 
+    val lightMapStyle = MapStyleOptions.loadRawResourceStyle(context, R.raw.lightmap)
+    val darkMapStyle = MapStyleOptions.loadRawResourceStyle(context, R.raw.darkmap)
+    lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
+    var currentMapStyle by remember { mutableStateOf(lightMapStyle) }
+
     LaunchedEffect(Unit) {
         trackingViewModel.initialize(context)
         trackingViewModel.startTracking(targetUserId)
     }
+
     val locationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     val locationRequest = mapViewModel.createLocationRequest()
     val locationCallback = remember {
         mapViewModel.createLocationCallback { result ->
             result.lastLocation?.let { loc ->
                 trackingViewModel.updateMyPosition(loc.latitude, loc.longitude)
-                mapViewModel.updateUserLocation(loc.latitude, loc.longitude) // También actualizamos nuestra propia pos en FB
+                mapViewModel.updateUserLocation(loc.latitude, loc.longitude)
             }
+        }
+    }
+
+    val sensorListener = object : SensorEventListener {
+        override fun onAccuracyChanged(p0: Sensor?, p1: Int) {}
+        override fun onSensorChanged(event: SensorEvent?) {
+            if (event?.sensor?.type == Sensor.TYPE_LIGHT) {
+                val lux = event.values[0]
+                currentMapStyle = if (lux < 2000) darkMapStyle else lightMapStyle
+            }
+        }
+    }
+
+    DisposableEffect(Unit) {
+        lightSensor?.let {
+            sensorManager.registerListener(sensorListener, it, SensorManager.SENSOR_DELAY_NORMAL)
+        }
+        onDispose {
+            sensorManager.unregisterListener(sensorListener)
         }
     }
 
@@ -94,10 +126,14 @@ fun mapTracker(
             val myMarkerState = rememberMarkerState()
             val targetMarkerState = rememberMarkerState()
 
-            GoogleMap(modifier = Modifier.fillMaxSize(), cameraPositionState = cameraPositionState) {
+            GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+                properties = MapProperties(mapStyleOptions = currentMapStyle)
+            ) {
                 state.myLocation?.let {
                     myMarkerState.position = it
-                    Marker(state = myMarkerState, title = "Yo", icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                    Marker(state = myMarkerState, title = "My location", icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                 }
                 state.targetUser?.let { user ->
                     if(user.latitude != 0.0) {
