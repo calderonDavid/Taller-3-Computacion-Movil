@@ -10,6 +10,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -48,6 +49,9 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.firebase.Firebase
+import com.google.firebase.messaging.ktx.messaging
+import com.google.firebase.messaging.messaging
 import com.google.maps.android.compose.MapProperties
 
 val locationPermission = Manifest.permission.ACCESS_FINE_LOCATION
@@ -243,31 +247,63 @@ fun LocationWithRequest(navController: NavController, mapViewModel: MapViewModel
                     )
                 }
             }
-            ElevatedButton(
-                onClick = {
-                    viewModel.toggleAvailability()
-                },
+            Row(
                 modifier = Modifier
                     .align(Alignment.TopCenter).fillMaxWidth()
-                    .padding(all = 10.dp)) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
+                    .padding(all = 10.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                ElevatedButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        viewModel.toggleAvailability()
+                    }) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(12.dp)
+                                .background(
+                                    color = if (auth.available) colorResource(R.color.Verde) else colorResource(R.color.RojoPlano),
+                                    shape = CircleShape
+                                )
+                        )
+                        Text(
+                            text = if (auth.available) "Available" else "Not Available",
+                            fontWeight = FontWeight.Bold,
+                            color = colorResource(R.color.black)
+                        )
+                    }
 
-                    Box(
-                        modifier = Modifier
-                            .size(12.dp)
-                            .background(
-                                color = if (auth.available) colorResource(R.color.Verde) else colorResource(R.color.RojoPlano),
-                                shape = CircleShape
-                            )
-                    )
-                    Text(
-                        text = if (auth.available) "Available" else "Not Available",
-                        fontWeight = FontWeight.Bold,
-                        color = colorResource(R.color.black)
-                    )
+                }
+                ElevatedButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        viewModel.toggleSubscription { isSuccess, message ->
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(12.dp)
+                                .background(
+                                    color = if (auth.isSubscribed) colorResource(R.color.Verde) else colorResource(R.color.RojoPlano),
+                                    shape = CircleShape
+                                )
+                        )
+                        Text(
+                            text = if (auth.isSubscribed) "Unsubscribe" else "Subscribe",
+                            fontWeight = FontWeight.Bold,
+                            color = colorResource(R.color.black)
+                        )
+                    }
                 }
             }
         }

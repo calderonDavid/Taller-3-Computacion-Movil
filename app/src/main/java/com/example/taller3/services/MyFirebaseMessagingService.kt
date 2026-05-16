@@ -26,10 +26,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     private fun showNotification(title: String, message: String, trackUserId: String?) {
         val notManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // Preparamos el Intent para abrir el MainActivity
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            // Le inyectamos el ID
             putExtra("TRACK_USER_ID", trackUserId)
         }
 

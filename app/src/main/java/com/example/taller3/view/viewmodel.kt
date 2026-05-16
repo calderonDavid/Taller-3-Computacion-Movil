@@ -3,9 +3,11 @@ package com.example.taller3.view
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import com.example.taller3.model.User
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.messaging.messaging
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,7 +26,8 @@ data class AuthState(
     val nameError: String = "",
     val lastnameError: String = "",
     val idError: String = "",
-    val available: Boolean = false
+    val available: Boolean = false,
+    val isSubscribed: Boolean = false
 )
 
 class AuthViewModel: ViewModel(){
@@ -147,6 +150,31 @@ class AuthViewModel: ViewModel(){
         val uid = FirebaseAuth.getInstance().currentUser?.uid
         if (uid != null) {
             FirebaseDatabase.getInstance().getReference("users/$uid/available").setValue(newState)
+        }
+    }
+    fun toggleSubscription(onResult: (Boolean, String) -> Unit) {
+        val currentlySubscribed = authState.value.isSubscribed
+
+        if (!currentlySubscribed) {
+            Firebase.messaging.subscribeToTopic("Available")
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        _authState.update { it.copy(isSubscribed = true) }
+                        onResult(true, "Subscribed successfully!")
+                    } else {
+                        onResult(false, "Failed to subscribe")
+                    }
+                }
+        } else {
+            Firebase.messaging.unsubscribeFromTopic("Available")
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        _authState.update { it.copy(isSubscribed = false) }
+                        onResult(true, "Unsubscribed successfully!")
+                    } else {
+                        onResult(false, "Failed to unsubscribe")
+                    }
+                }
         }
     }
 }
