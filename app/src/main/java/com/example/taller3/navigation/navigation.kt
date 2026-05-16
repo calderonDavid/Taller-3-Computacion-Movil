@@ -1,18 +1,15 @@
 package com.example.taller3.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.taller3.AuthViewModel
-import com.example.taller3.MapViewModel
 import com.example.taller3.screens.login
 import com.example.taller3.screens.register
 import com.example.taller3.screens.home
 import com.example.taller3.screens.mapTracker
 import com.example.taller3.screens.userlist
+import com.google.firebase.auth.FirebaseUser
 
 
 enum class AppScreens{
@@ -25,9 +22,14 @@ enum class AppScreens{
 }
 
 @Composable
-fun Navigation(){
+fun Navigation(currentUser: FirebaseUser?, trackUserId: String?){
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = AppScreens.authentication.name){
+    val startDestination = when {
+        currentUser == null -> AppScreens.authentication.name
+        trackUserId != null -> "${AppScreens.tracking.name}/$trackUserId"
+        else -> AppScreens.home.name
+    }
+    NavHost(navController = navController, startDestination = startDestination){
         composable(route = AppScreens.authentication.name){
             login(navController)
         }

@@ -23,7 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
-import com.example.taller3.AuthViewModel
+import com.example.taller3.view.AuthViewModel
 import com.example.taller3.R
 import com.example.taller3.navigation.AppScreens
 import com.example.taller3.util.ButtonShared

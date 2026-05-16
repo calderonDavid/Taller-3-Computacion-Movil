@@ -42,7 +42,7 @@ android {
 }
 
 dependencies {
-    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
     implementation("org.osmdroid:osmdroid-android:6.1.16")
     implementation("com.github.MKergall:osmbonuspack:6.9.0")
     implementation(libs.androidx.compose.foundation)
@@ -67,13 +67,15 @@ dependencies {
     implementation(libs.firebase.storage)
     implementation(libs.googleid)
     implementation("androidx.navigation:navigation-runtime-ktx:2.8.0")
-    implementation("com.google.firebase:firebase-database-ktx")
-    implementation("com.google.firebase:firebase-storage-ktx")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
     implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("com.google.maps.android:maps-compose:6.6.0")
     implementation("com.google.accompanist:accompanist-permissions:0.37.0")
     implementation("com.google.android.gms:play-services-maps:19.2.0")
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-database-ktx")
+    implementation("com.google.firebase:firebase-storage-ktx")
+    implementation("com.google.firebase:firebase-messaging-ktx")
     implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.taller3.MapViewModel
+import com.example.taller3.view.MapViewModel
 import com.example.taller3.R
 import com.example.taller3.TrackingViewModel
 import com.google.android.gms.location.LocationServices
@@ -43,13 +43,10 @@ fun mapTracker(
     val context = LocalContext.current
     val state by trackingViewModel.trackingState.collectAsState()
 
-    // Inicializamos el viewModel una sola vez
     LaunchedEffect(Unit) {
         trackingViewModel.initialize(context)
         trackingViewModel.startTracking(targetUserId)
     }
-
-    // Lógica para obtener nuestra ubicación
     val locationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     val locationRequest = mapViewModel.createLocationRequest()
     val locationCallback = remember {

@@ -1,6 +1,5 @@
 package com.example.taller3.screens
 
-import android.provider.CalendarContract
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,7 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.taller3.AuthViewModel
+import com.example.taller3.view.AuthViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.taller3.navigation.AppScreens
 import com.example.taller3.util.ButtonShared

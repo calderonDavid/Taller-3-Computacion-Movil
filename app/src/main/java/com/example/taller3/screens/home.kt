@@ -30,14 +30,13 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.taller3.AuthViewModel
-import com.example.taller3.MapViewModel
+import com.example.taller3.view.AuthViewModel
+import com.example.taller3.view.MapViewModel
 import com.example.taller3.lightSensor
 import com.example.taller3.navigation.AppScreens
 import com.example.taller3.sensorManager
 import com.example.taller3.util.ButtonShared
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.CameraPosition
@@ -46,31 +45,37 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.MapProperties
 
 val locationPermission = Manifest.permission.ACCESS_FINE_LOCATION
+val notificationPermission = android.Manifest.permission.POST_NOTIFICATIONS
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun home(controller: NavController, mapViewModel: MapViewModel = viewModel(),viewModel: AuthViewModel =viewModel()) {
-    val permission = rememberPermissionState(locationPermission)
+    val permissionsToRequest = remember {
+        val list = mutableListOf(locationPermission)
+        list.add(notificationPermission)
+        list
+    }
+    val multiplePermissionsState = rememberMultiplePermissionsState(permissionsToRequest)
     var showButton by remember { mutableStateOf(false) }
 
     SideEffect {
-        if (!permission.status.isGranted) {
-            if (permission.status.shouldShowRationale) {
+        if (!multiplePermissionsState.allPermissionsGranted) {
+            if (multiplePermissionsState.shouldShowRationale) {
                 showButton = true
             } else {
                 showButton = false
-                permission.launchPermissionRequest()
+                multiplePermissionsState.launchMultiplePermissionRequest()
             }
         }
     }
 
-    if (permission.status.isGranted) {
+    if (multiplePermissionsState.allPermissionsGranted) {
         LocationWithRequest(controller, mapViewModel,viewModel)
     } else {
         Column(
@@ -79,12 +84,13 @@ fun home(controller: NavController, mapViewModel: MapViewModel = viewModel(),vie
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (showButton) {
-                Text("Access to GPS is Mandatory for this app.")
-                ButtonShared("Request Location Permission") {
-                    permission.launchPermissionRequest()
+                Text("Access to GPS and Notifications are mandatory.")
+                Spacer(modifier = Modifier.height(16.dp))
+                ButtonShared("Request Permissions") {
+                    multiplePermissionsState.launchMultiplePermissionRequest()
                 }
             } else {
-                Text("No access to location")
+                Text("No access to required permissions")
             }
         }
     }
@@ -117,7 +123,7 @@ fun LocationWithRequest(navController: NavController, mapViewModel: MapViewModel
     var currentMapStyle by remember { mutableStateOf(lightMapStyle) }
 
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(LatLng(state.currentLat, state.currentLng), 16f)
+        position = CameraPosition.fromLatLngZoom(LatLng(state.currentLat, state.currentLng), 14f)
     }
 
     val locationCallback = remember {
@@ -126,7 +132,7 @@ fun LocationWithRequest(navController: NavController, mapViewModel: MapViewModel
                 mapViewModel.updateUserLocation(location.latitude, location.longitude)
 
                 cameraPositionState.position = CameraPosition.fromLatLngZoom(
-                    LatLng(location.latitude, location.longitude), 16f
+                    LatLng(location.latitude, location.longitude), 14f
                 )
             }
         }

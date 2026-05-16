@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import com.example.taller3.AuthState
-import com.example.taller3.AuthViewModel
+import com.example.taller3.view.AuthState
+import com.example.taller3.view.AuthViewModel
 import com.example.taller3.R
 
 @Composable

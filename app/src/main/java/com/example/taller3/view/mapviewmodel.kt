@@ -1,14 +1,21 @@
-package com.example.taller3
+package com.example.taller3.view
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.example.taller3.R
 import com.example.taller3.model.POI
+import com.example.taller3.model.User
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.Priority
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.getValue
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

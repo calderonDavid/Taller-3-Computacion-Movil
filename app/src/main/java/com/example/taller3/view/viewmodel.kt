@@ -1,4 +1,4 @@
-package com.example.taller3
+package com.example.taller3.view
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
@@ -141,7 +141,6 @@ class AuthViewModel: ViewModel(){
                 }
         }
     }
-
     fun toggleAvailability() {
         val newState = !_authState.value.available
         updateAvailable(newState)

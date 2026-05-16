@@ -1,29 +1,20 @@
 package com.example.taller3
 
-import android.hardware.Sensor
-import android.hardware.SensorManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.taller3.navigation.Navigation
-import com.example.taller3.ui.theme.Taller3Theme
-var lightSensor : Sensor? = null
-lateinit var sensorManager: SensorManager
+import com.google.firebase.auth.FirebaseAuth
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         enableEdgeToEdge()
+        val trackUserId = intent.getStringExtra("TRACK_USER_ID")
+        val currentUser = FirebaseAuth.getInstance().currentUser
         setContent {
-            Navigation()
+            Navigation(currentUser,trackUserId)
         }
     }
 }
