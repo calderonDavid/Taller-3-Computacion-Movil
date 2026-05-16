@@ -11,11 +11,15 @@ import com.example.taller3.MapViewModel
 import com.example.taller3.screens.login
 import com.example.taller3.screens.register
 import com.example.taller3.screens.home
+import com.example.taller3.screens.mapTracker
+import com.example.taller3.screens.userlist
 
 
 enum class AppScreens{
     authentication,
     register,
+    userList,
+    tracking,
     home
 
 }
@@ -32,6 +36,12 @@ fun Navigation(){
         }
         composable(route = AppScreens.home.name){
             home(navController)
+        }
+        composable(route = AppScreens.userList.name){
+            userlist(navController)
+        }
+        composable(route = AppScreens.tracking.name){
+            mapTracker()
         }
     }
 }

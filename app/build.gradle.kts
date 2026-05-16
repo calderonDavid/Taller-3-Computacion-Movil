@@ -43,6 +43,7 @@ android {
 
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
+    implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -54,6 +55,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.8.0")
     implementation("androidx.navigation:navigation-runtime-ktx:2.8.0")
     implementation("androidx.room:room-ktx:2.6.1")
+    implementation(libs.androidx.ui.graphics)
     implementation(libs.firebase.auth)
     implementation(libs.androidx.compose.ui.graphics)
     implementation("androidx.compose.material:material-icons-extended")
